@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const META_PIXEL_ID = process.env.META_PIXEL_ID || "1003040479386816";
 const META_CAPI_ACCESS_TOKEN = process.env.META_CAPI_ACCESS_TOKEN;
 const META_CAPI_VERSION = process.env.META_CAPI_VERSION || "v20.0";
+const META_TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE || "TEST5368";
 
 function normalizeEmail(value) {
   return String(value || "").trim().toLowerCase().replace(/\s+/g, "");
@@ -88,6 +89,7 @@ module.exports = async function handler(req, res) {
   const email = normalizeEmail(body.email);
   const phone = normalizePhone(body.phone);
   const eventId = String(body.eventId || "").trim();
+  const testEventCode = String(body.testEventCode || META_TEST_EVENT_CODE || "").trim();
   const eventSourceUrl = String(body.pageUrl || "").trim() || req.headers.referer || "";
   const userAgent = String(body.userAgent || req.headers["user-agent"] || "").trim();
 
@@ -96,6 +98,7 @@ module.exports = async function handler(req, res) {
   }
 
   const payload = {
+    test_event_code: testEventCode,
     data: [
       {
         event_name: "Lead",

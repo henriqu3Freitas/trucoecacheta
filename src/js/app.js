@@ -2,6 +2,7 @@ const SUPABASE_URL = "https://madnbhxirczgzwhpqmio.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_CGg3mfoZyaR00fTOJf7RcQ_SLXwILni";
 const DESTINATION_URL = "https://cacheta.app.link/WI4K0q";
 const META_CAPI_ENDPOINT = "/api/meta-capi";
+const META_TEST_EVENT_CODE = "TEST5368";
 
 const openTrigger = document.getElementById("openLeadForm");
 const modal = document.getElementById("leadModal");
@@ -268,6 +269,7 @@ async function trackLeadConversion(payload) {
       body: JSON.stringify({
         ...payload,
         eventId,
+        testEventCode: META_TEST_EVENT_CODE,
         pageUrl: window.location.href,
         userAgent: navigator.userAgent,
       }),
