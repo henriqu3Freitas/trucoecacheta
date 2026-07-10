@@ -1,5 +1,5 @@
-const SUPABASE_URL = "https://madnbhxirczgzwhpqmio.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_CGg3mfoZyaR00fTOJf7RcQ_SLXwILni";
+const SUPABASE_URL = "https://avambaxyojtesfqjcjph.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_ggidVInxePrXo0vAufg5YQ_aHwM9Rq7";
 const DESTINATION_URL = "https://cacheta.app.link/WI4K0q";
 const META_CAPI_ENDPOINT = "/api/meta-capi";
 const META_TEST_EVENT_CODE = "TEST5368";
