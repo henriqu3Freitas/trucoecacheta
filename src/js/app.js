@@ -172,7 +172,14 @@ function closeModal() {
 }
 
 function normalizePhone(value) {
-  return value.replace(/\D+/g, "");
+  let digits = value.replace(/\D+/g, "");
+
+  // If user includes Brazil country code (55), keep the national number only.
+  if (digits.length > 11 && digits.startsWith("55")) {
+    digits = digits.slice(2);
+  }
+
+  return digits.slice(0, 11);
 }
 
 function normalizeEmail(value) {
