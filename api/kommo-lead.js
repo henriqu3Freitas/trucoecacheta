@@ -103,22 +103,24 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 400, { ok: false, error: "Missing required lead data." });
   }
 
-  const payload = {
-    name: kommoLeadName,
-    pipeline_id: kommoPipelineId ? Number(kommoPipelineId) : undefined,
-    status_id: kommoStatusId ? Number(kommoStatusId) : undefined,
-    _embedded: {
-      contacts: [
-        {
-          first_name: name,
-          custom_fields_values: buildCustomFieldValues({
-            email,
-            phone,
-          }),
-        },
-      ],
+  const payload = [
+    {
+      name: kommoLeadName,
+      pipeline_id: kommoPipelineId ? Number(kommoPipelineId) : undefined,
+      status_id: kommoStatusId ? Number(kommoStatusId) : undefined,
+      _embedded: {
+        contacts: [
+          {
+            first_name: name,
+            custom_fields_values: buildCustomFieldValues({
+              email,
+              phone,
+            }),
+          },
+        ],
+      },
     },
-  };
+  ];
 
   const response = await fetch(`${kommoBaseUrl.replace(/\/$/, "")}/api/v4/leads/complex`, {
     method: "POST",
