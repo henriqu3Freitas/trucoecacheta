@@ -2,6 +2,7 @@ const SUPABASE_URL = "https://avambaxyojtesfqjcjph.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_ggidVInxePrXo0vAufg5YQ_aHwM9Rq7";
 const DESTINATION_URL = "https://cacheta.app.link/WI4K0q";
 const META_CAPI_ENDPOINT = "/api/meta-capi";
+const KOMMO_LEAD_ENDPOINT = "/api/kommo-lead";
 const META_TEST_EVENT_CODE = "TEST5368";
 
 const openTrigger = document.getElementById("openLeadForm");
@@ -291,6 +292,21 @@ async function trackLeadConversion(payload) {
   }
 }
 
+async function sendLeadToKommo(payload) {
+  const response = await fetch(KOMMO_LEAD_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || "Não foi possível enviar o lead para o Kommo.");
+  }
+}
+
 openTrigger.addEventListener("click", (event) => {
   event.preventDefault();
   openModal();
@@ -340,6 +356,12 @@ form.addEventListener("submit", async (event) => {
 
   try {
     await saveLeadToSupabase({
+      name,
+      email,
+      phone,
+    });
+
+    await sendLeadToKommo({
       name,
       email,
       phone,
