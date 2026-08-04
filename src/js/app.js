@@ -12,6 +12,8 @@ const status = document.getElementById("leadStatus");
 const nameInput = document.getElementById("leadName");
 const emailInput = document.getElementById("leadEmail");
 const phoneInput = document.getElementById("leadPhone");
+let isFormSubmitting = false;
+const SUBMITTED_LEADS_STORAGE_KEY = "trucoecacheta.submittedLeads";
 
 // Handle video autoplay and controls
 function initializeVideo() {
@@ -243,6 +245,37 @@ function openDestination() {
   }
 }
 
+function getSubmittedLeads() {
+  try {
+    const rawValue = window.localStorage.getItem(SUBMITTED_LEADS_STORAGE_KEY);
+    const parsedValue = rawValue ? JSON.parse(rawValue) : {};
+
+    if (!parsedValue || typeof parsedValue !== "object" || Array.isArray(parsedValue)) {
+      return {};
+    }
+
+    return parsedValue;
+  } catch (error) {
+    return {};
+  }
+}
+
+function hasSubmittedLead(email, phone) {
+  const leadKey = `${email}|${phone}`;
+  return Boolean(getSubmittedLeads()[leadKey]);
+}
+
+function rememberSubmittedLead(email, phone) {
+  try {
+    const submittedLeads = getSubmittedLeads();
+    const leadKey = `${email}|${phone}`;
+    submittedLeads[leadKey] = Date.now();
+    window.localStorage.setItem(SUBMITTED_LEADS_STORAGE_KEY, JSON.stringify(submittedLeads));
+  } catch (error) {
+    console.warn("Não foi possível registrar o cadastro enviado.", error);
+  }
+}
+
 async function saveLeadToSupabase(payload) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
     method: "POST",
@@ -340,9 +373,14 @@ document.addEventListener("keydown", (event) => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  if (isFormSubmitting) {
+    return;
+  }
+
   const name = nameInput.value.trim();
   const email = normalizeEmail(emailInput.value);
   const phone = normalizePhone(phoneInput.value);
+  const leadWasAlreadySubmitted = hasSubmittedLead(email, phone);
 
   emailInput.value = email;
 
@@ -353,13 +391,24 @@ form.addEventListener("submit", async (event) => {
 
   setStatus("Enviando...", "loading");
   setSubmitting(true);
+  isFormSubmitting = true;
 
   try {
+    if (leadWasAlreadySubmitted) {
+      setStatus("Esse cadastro já foi enviado. Abrindo a Play Store...", "success");
+      window.setTimeout(() => {
+        openDestination();
+      }, 700);
+      return;
+    }
+
     await saveLeadToSupabase({
       name,
       email,
       phone,
     });
+
+    rememberSubmittedLead(email, phone);
 
     await sendLeadToKommo({
       name,
@@ -382,5 +431,6 @@ form.addEventListener("submit", async (event) => {
     console.error(error);
   } finally {
     setSubmitting(false);
+    isFormSubmitting = false;
   }
 });
